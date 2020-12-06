@@ -2,7 +2,7 @@
  * Copyright (c) 2016-2020 Moddable Tech, Inc.
  *
  *   This file is part of the Moddable SDK.
- * 
+ *
  *   This work is licensed under the
  *       Creative Commons Attribution 4.0 International License.
  *   To view a copy of this license, visit
@@ -12,17 +12,41 @@
  *
  */
 
-import {Server} from "http";
+import { Server } from "http";
 
-let server = new Server({port: 80});
-server.callback = function(msg, value, etc) {
-	if (Server.status == msg) {
-		this.path = value;
-		this.method = etc;
-	}
-	else if (Server.prepareResponse == msg)
-		return {
-			headers: ["Content-Type", "text/plain"],
-			body: `hello. path "${this.path}". method "${this.method}".`
-		};
+// const server = new Server({port: 80});
+// server.callback = function(msg, value, etc) {
+// 	if (Server.status == msg) {
+// 		this.path = value;
+// 		this.method = etc;
+// 	}
+// 	else if (Server.prepareResponse == msg)
+// 		return {
+// 			headers: ["Content-Type", "text/plain"],
+// 			body: `hello. path "${this.path}". method "${this.method}".`
+// 		};
+// }
+
+class SimpleServer extends Server {
+  constructor() {
+    super();
+  }
+
+  callback = function (message, value, meta) {
+    switch (message) {
+      case Server.status:
+        this.path = value;
+        this.method = meta;
+        break;
+      case Server.prepareResponse:
+        return {
+          headers: ["Content-Type", "text/plain"],
+          body: `hello. path "${this.path}". method "${this.method}".`
+        };
+      default:
+        break;
+    }
+  };
 }
+
+new SimpleServer();

@@ -15,8 +15,8 @@
 import WiFi from "wifi";
 
 let wifiMonitor = new WiFi({
-        ssid: "my wi-fi",
-        password: "secret"
+        ssid: "Speak Friend",
+        password: "Mellon!!"
     },
     function(msg) {
         switch (msg) {

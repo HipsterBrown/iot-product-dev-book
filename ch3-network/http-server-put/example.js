@@ -2,7 +2,7 @@
  * Copyright (c) 2016-2020 Moddable Tech, Inc.
  *
  *   This file is part of the Moddable SDK.
- * 
+ *
  *   This work is licensed under the
  *       Creative Commons Attribution 4.0 International License.
  *   To view a copy of this license, visit
@@ -12,33 +12,62 @@
  *
  */
 
-import {Server} from "http";
+import { Server } from "http";
 
-let server = new Server;
+// let server = new Server;
+//
+// server.callback = function(msg, value, etc) {
+// 	switch (msg) {
+// 		case Server.status:
+// 			if ("PUT" !== etc)
+// 				this.close();
+// 			return;
+//
+// 		case Server.headersComplete:
+// 			return String;
+//
+// 		case Server.requestComplete:
+// 			this.json = {
+// 				error: "none",
+// 				when: (new Date).toString(),
+// 				request: JSON.parse(value)
+// 			};
+// 			break;
+//
+// 		case Server.prepareResponse:
+// 			return {
+// 				headers: ["Content-Type", "application/json"],
+// 				body: JSON.stringify(this.json)
+// 			};
+// 	}
+// }
+//
+class PutServer extends Server {
+  constructor() {
+    super();
+  }
 
-server.callback = function(msg, value, etc) {
-	switch (msg) {
-		case Server.status:
-			if ("PUT" !== etc)
-				this.close();
-			return;
-
-		case Server.headersComplete:
-			return String;
-
-		case Server.requestComplete:
-			this.json = {
-				error: "none",
-				when: (new Date).toString(),
-				request: JSON.parse(value)
-			};
-			break;
-
-		case Server.prepareResponse:
-			return {
-				headers: ["Content-Type", "application/json"],
-				body: JSON.stringify(this.json)
-			};
-	}
+  callback = function (message, value, meta) {
+    switch (message) {
+      case Server.status:
+        if (meta !== "PUT") this.close();
+        return;
+      case Server.headersComplete:
+        return String;
+      case Server.requestComplete:
+        this.json = {
+          error: "none",
+          when: new Date().toString(),
+          request: JSON.parse(value)
+        };
+        break;
+      case Server.prepareResponse:
+        return {
+          headers: ["Content-Type", "application/json"],
+          body: JSON.stringify(this.json)
+        };
+    }
+  };
 }
 
+new PutServer();

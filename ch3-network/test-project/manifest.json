@@ -1,0 +1,13 @@
+{
+  "include": [
+    "$(MODDABLE)/examples/manifest_base.json",
+    "$(MODDABLE)/examples/manifest_net.json",
+    "$(MODDABLE)/modules/network/mdns/manifest.json",
+    "$(MODDABLE)/modules/files/preference/manifest.json"
+  ],
+  "modules": {
+    "*": ["./main", "$(MODULES)/network/http/*", "$(MODULES)/network/sntp/*"],
+    "dns/server": "$(MODULES)/network/dns/dnsserver"
+  },
+  "preload": ["preference", "http", "sntp", "dns/server"]
+}

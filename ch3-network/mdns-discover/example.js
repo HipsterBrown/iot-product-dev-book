@@ -2,7 +2,7 @@
  * Copyright (c) 2016-2020 Moddable Tech, Inc.
  *
  *   This file is part of the Moddable SDK.
- * 
+ *
  *   This work is licensed under the
  *       Creative Commons Attribution 4.0 International License.
  *   To view a copy of this license, visit
@@ -12,25 +12,62 @@
  *
  */
 import MDNS from "mdns";
-import {Request} from "http";
+import { Request } from "http";
 
-let mdns = new MDNS;
-mdns.monitor("_http._tcp", function (service, instance) {
-	trace(`Found ${service}: "${instance.name}" @ ` + 
-		`${instance.target} ` + 
-		`(${instance.address}:${instance.port})\n`);
+class FetchServiceHeaders extends Request {
+  constructor({ address: host, port }) {
+    super({
+      host,
+      port
+    });
+  }
 
-	let request = new Request({
-		host: instance.address,
-		port: instance.port,
-		path: "/"
-	});
-	request.callback = function(msg, value, etc) {
-		if (Request.header === msg)
-			trace(`  ${value}: ${etc}\n`);
-		else if (Request.responseComplete === msg)
-			trace("\n\n");
-		else if (Request.error === msg)
-			trace("error \n\n");
-	};
-});
+  callback = function (message, value, meta) {
+    switch (message) {
+      case Request.header:
+        trace(`  ${value}: ${meta}\n`);
+        break;
+      case Request.responseComplete:
+        trace("\n\n");
+        break;
+      case Request.error:
+        trace("error \n\n");
+        break;
+    }
+  };
+}
+
+class ServiceDiscovery extends MDNS {
+  constructor(type = "_http._tcp") {
+    super();
+
+    this.monitor(type, function (service, instance) {
+      trace(
+        `Found ${service}: "${instance.name}" @${instance.target} (${instance.address}:${instance.port})\n`
+      );
+      // new FetchServiceHeaders(instance);
+    });
+  }
+}
+new ServiceDiscovery("_http._tcp");
+
+// let mdns = new MDNS;
+// mdns.monitor("_http._tcp", function (service, instance) {
+// 	trace(`Found ${service}: "${instance.name}" @ ` +
+// 		`${instance.target} ` +
+// 		`(${instance.address}:${instance.port})\n`);
+//
+// 	let request = new Request({
+// 		host: instance.address,
+// 		port: instance.port,
+// 		path: "/"
+// 	});
+// 	request.callback = function(msg, value, etc) {
+// 		if (Request.header === msg)
+// 			trace(`  ${value}: ${etc}\n`);
+// 		else if (Request.responseComplete === msg)
+// 			trace("\n\n");
+// 		else if (Request.error === msg)
+// 			trace("error \n\n");
+// 	};
+// });

@@ -15,7 +15,7 @@
 import {Request} from "http";
 
 const APPID = "94de4cda19a2ba07d3fa6450eb80f091";
-const zip = "94303";
+const zip = "10024";
 const country = "us";
 	
 let request = new Request({
